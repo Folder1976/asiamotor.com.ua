@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+  <code>oct_product_sizes_table_100</code>
+  <name>Octemplates - Product Sizes Table</name>
+  <version>1.0.0</version>
+  <author>Octemplates</author>
+  <link>http://octemplates.net/</link>
+  <file path="catalog/language/ru-ru/product/product.php">
+   <operation error="skip">
+      <search><![CDATA[<?php]]></search>
+      <add position="after"><![CDATA[
+        $_['text_show_product_sizes_table'] = 'Посмотреть таблицу размеров';
+      ]]></add>
+    </operation>
+  </file>  
+  <file path="catalog/language/uk-ua/product/product.php">
+     <operation error="skip">
+      <search><![CDATA[<?php]]></search>
+      <add position="after"><![CDATA[
+        $_['text_show_product_sizes_table'] = 'Переглянути таблицю розмірів';
+      ]]></add>
+    </operation>
+  </file> 
+  <file path="catalog/language/en-gb/product/product.php">
+     <operation error="skip">
+      <search><![CDATA[<?php]]></search>
+      <add position="after"><![CDATA[
+        $_['text_show_product_sizes_table'] = 'View size chart';
+      ]]></add>
+    </operation>
+  </file>
+  <file path="catalog/controller/product/product.php">
+    <operation error="skip">
+      <search><![CDATA[if ($product_info['quantity'] <= 0) {]]></search>
+      <add position="before"><![CDATA[
+        $oct_product_sizes_table_data = $this->config->get('oct_product_sizes_table_data');
+        $data['text_show_product_sizes_table'] = $this->language->get('text_show_product_sizes_table');
+        $data['lang_code'] = $this->session->data['language'];
+
+        if (isset($oct_product_sizes_table_data['status']) && $oct_product_sizes_table_data['status'] && isset($this->request->get['route']) && isset($this->request->get['path']) && $this->request->get['route'] == 'product/product') {
+          
+          if (isset($oct_product_sizes_table_data['sections']) && !empty($oct_product_sizes_table_data['sections'])) {
+            $data['product_sizes_table'] = $oct_product_sizes_table_data['sections'];  
+          } else {
+            $data['product_sizes_table'] = array();
+          }
+
+          $parts = explode('_', (string)$this->request->get['path']);
+          $data['section_category_id'] = (int)array_pop($parts);
+
+          if ($data['product_sizes_table']) {
+            foreach($data['product_sizes_table'] as $block_section) {
+              if (isset($block_section['categories']) && in_array($data['section_category_id'], $block_section['categories'])) {
+                $data['show_product_sizes_table_status'] = true;
+                break;
+              } else {
+                $data['show_product_sizes_table_status'] = false;
+              }
+            }
+          } else {
+            $data['show_product_sizes_table_status'] = false;
+          }
+        } else {
+          $data['section_category_id'] = 0;
+          $data['show_product_sizes_table_status'] = false;
+          $data['product_sizes_table'] = array();
+        }
+      ]]></add>
+    </operation>
+  </file>
+</modification>

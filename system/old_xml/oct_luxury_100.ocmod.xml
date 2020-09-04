@@ -1,0 +1,918 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>oct_luxury_100</code>
+    <name>Octemplates - Luxury Template 1.0.0</name>
+    <version>1.0.0</version>
+    <author>Octemplates</author>
+	<link>http://octemplates.net/</link>
+    <file path="catalog/controller/information/contact.php">
+        <operation error="skip">
+            <search><![CDATA[$data['heading_title'] = $this->language->get('heading_title');]]></search>
+            <add position="after"><![CDATA[
+			$this->load->language('octemplates/oct_luxury');
+			$data['oct_home_text'] = $this->language->get('oct_home_text');
+			$oct_data = $this->config->get('oct_luxury_data');
+			$oct_luxury_cont_contacthtml = $oct_data['cont_contacthtml'];
+
+			if(empty($oct_luxury_cont_contacthtml[$this->session->data['language']])) {
+				$data['oct_luxury_cont_contacthtml'] = false;
+			} elseif (isset($oct_luxury_cont_contacthtml[$this->session->data['language']])) {
+				$data['oct_luxury_cont_contacthtml'] = html_entity_decode($oct_luxury_cont_contacthtml[$this->session->data['language']], ENT_QUOTES, 'UTF-8');
+			}
+
+			$data['oct_luxury_cont_contactmap'] = $oct_data['cont_contactmap'];
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="replace"><![CDATA[$mail->setTo($this->config->get('config_email'));]]></search>
+            <add offset="1"><![CDATA[
+			$mail->setTo($this->config->get('config_email'));
+            if($this->config->get('config_mail_protocol') == "smtp") {
+				$mail->setFrom($this->config->get('config_email'));
+            } else {
+            	$mail->setFrom($this->request->post['email']);
+            }
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="replace"><![CDATA[$mail->setSender(html_entity_decode($this->request->post['name'], ENT_QUOTES, 'UTF-8'));]]></search>
+            <add><![CDATA[
+            if($this->config->get('config_mail_protocol') == "smtp") {
+				$mail->setSender(html_entity_decode($this->request->post['email'], ENT_QUOTES, 'UTF-8'));
+				$mail->setReplyTo($this->request->post['email']);
+            } else {
+				$mail->setSender(html_entity_decode($this->request->post['name'], ENT_QUOTES, 'UTF-8'));
+            }
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->error['name'])) {]]></search>
+            <add position="before"><![CDATA[
+			$oct_luxury_data = $this->config->get('oct_luxury_data');
+
+			if (isset($oct_luxury_data['terms']) && $oct_luxury_data['terms']) {
+				$this->load->model('catalog/information');
+
+				$information_info = $this->model_catalog_information->getInformation($oct_luxury_data['terms']);
+
+				if ($information_info) {
+					$data['text_terms'] = sprintf($this->language->get('text_oct_terms'), $this->url->link('information/information', 'information_id=' . $oct_luxury_data['terms'], 'SSL'), $information_info['title'], $information_info['title']);
+				} else {
+					$data['text_terms'] = '';
+				}
+			} else {
+				$data['text_terms'] = '';
+			}
+
+			if (isset($this->error['terms'])) {
+				$data['error_terms'] = $this->error['terms'];
+			} else {
+				$data['error_terms'] = '';
+			}
+
+			if (isset($this->request->post['terms'])) {
+				$data['terms'] = $this->request->post['terms'];
+			} else {
+				$data['terms'] = '';
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->error['name'] = $this->language->get('error_name');]]></search>
+            <add position="after" offset="1"><![CDATA[
+			$oct_luxury_data = $this->config->get('oct_luxury_data');
+
+			if (isset($oct_luxury_data['terms']) && $oct_luxury_data['terms']) {
+				if (!isset($this->request->post['terms'])) {
+					$this->load->model('catalog/information');
+
+					$information_info = $this->model_catalog_information->getInformation($oct_luxury_data['terms']);
+
+					$this->error['terms'] = sprintf($this->language->get('error_oct_terms'), $information_info['title']);
+				}
+			}
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/account/voucher.php">
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->error['amount'])) {]]></search>
+            <add position="before"><![CDATA[
+			$oct_luxury_data = $this->config->get('oct_luxury_data');
+
+			if (isset($oct_luxury_data['terms']) && $oct_luxury_data['terms']) {
+            	$this->load->model('catalog/information');
+
+				$information_info = $this->model_catalog_information->getInformation($oct_luxury_data['terms']);
+
+				if ($information_info) {
+					$data['text_terms'] = sprintf($this->language->get('text_oct_terms'), $this->url->link('information/information', 'information_id=' . $oct_luxury_data['terms'], 'SSL'), $information_info['title'], $information_info['title']);
+				} else {
+					$data['text_terms'] = '';
+				}
+			} else {
+            	$data['text_terms'] = '';
+			}
+
+			if (isset($this->error['terms'])) {
+            	$data['error_terms'] = $this->error['terms'];
+			} else {
+            	$data['error_terms'] = '';
+			}
+
+			if (isset($this->request->post['terms'])) {
+            	$data['terms'] = $this->request->post['terms'];
+			} else {
+            	$data['terms'] = '';
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['agree'])) {]]></search>
+            <add position="before"><![CDATA[
+			$oct_luxury_data = $this->config->get('oct_luxury_data');
+
+			if (isset($oct_luxury_data['terms']) && $oct_luxury_data['terms']) {
+            	if (!isset($this->request->post['terms'])) {
+					$this->load->model('catalog/information');
+
+					$information_info = $this->model_catalog_information->getInformation($oct_luxury_data['terms']);
+
+					$this->error['terms'] = sprintf($this->language->get('error_oct_terms'), $information_info['title']);
+				}
+			}
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/manufacturer.php">
+        <operation error="skip">
+            <search><![CDATA['href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $result['manufacturer_id'])]]></search>
+            <add position="replace"><![CDATA[
+			'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $result['manufacturer_id']),
+			'img' => $this->model_tool_image->resize($result['image'], 150, 150)
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['continue'] = $this->url->link('common/home');]]></search>
+            <add position="before"><![CDATA[
+			$data['showlogos'] = 0;
+			$oct_data = $this->config->get('oct_luxury_data');
+
+			if($oct_data['showmanlogos'] == "on") {
+				$data['showlogos'] = 1;
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$key = '0 - 9';]]></search>
+            <add position="replace"><![CDATA[
+            $key = '0-9';
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/account/account.php">
+        <operation error="skip">
+            <search><![CDATA[$data['text_recurring'] = $this->language->get('text_recurring');]]></search>
+            <add position="after"><![CDATA[
+			$this->load->language('octemplates/oct_luxury');
+			$data['oct_text_logout'] = $this->language->get('oct_text_logout');
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/header.php">
+        <operation error="skip">
+            <search><![CDATA[$data['telephone'] = $this->config->get('config_telephone');]]></search>
+            <add position="after"><![CDATA[
+			$this->load->language('octemplates/oct_luxury');
+		  	$data['text_compare'] = $this->language->get('text_compare');
+	  		$data['oct_search'] = $this->language->get('oct_search');
+		    $data['oct_head_info'] = $this->language->get('oct_head_info');
+		    $data['oct_head_settings'] = $this->language->get('oct_head_settings');
+		    $data['oct_head_feedback'] = $this->language->get('oct_head_feedback');
+		    $data['oct_head_news'] = $this->language->get('oct_head_news');
+		    $data['oct_head_contact'] = $this->language->get('oct_head_contact');
+		    $data['text_oct_menu'] = $this->language->get('text_oct_menu');
+		    $data['text_oct_back'] = $this->language->get('text_oct_back');
+		    
+		    $data['compare'] = $this->url->link('product/compare');
+		    $data['newslink'] = $this->url->link('octemplates/blog_articles');
+		    $data['contactlink'] = $this->url->link('information/contact');
+	
+	      	$oct_data = $this->config->get('oct_luxury_data');
+	        $data['oct_luxury_status'] = $this->config->get('oct_luxury_status');
+	        $data['shownews'] = $oct_data['shownews'];
+			$data['showcontacts'] = $oct_data['showcontacts'];
+			$data['minifyjscss'] = isset($oct_data['minifyjscss']) ? $oct_data['minifyjscss'] : 'on';
+			
+	        // Настройки основных цветов
+	        $data['oct_luxury_maincolor1']                  = $oct_data['maincolor1'];
+	        $data['oct_luxury_maincolor2']                  = $oct_data['maincolor2'];
+	        $data['oct_luxury_maincolor3']                  = $oct_data['maincolor3'];
+
+	        // Шапка сайта - настройки цветов
+	        $data['oct_luxury_head_1bge']                   = $oct_data['head_1bge'];
+	        $data['oct_luxury_head_1linkcolore']              = $oct_data['head_1linkcolore'];
+	        $data['oct_luxury_head_2bg']                  = $oct_data['head_2bg'];
+	        $data['oct_luxury_head_infocolor']              = $oct_data['head_infocolor'];
+	        $data['oct_luxury_head_linecolor']                = $oct_data['head_linecolor'];
+	        $data['oct_luxury_head_linecolor_hover']          = $oct_data['head_linecolor_hover'];
+	        $data['oct_luxury_head_tooltiplinkcolor']           = $oct_data['head_tooltiplinkcolor'];
+	        $data['oct_luxury_text_head_tooltiplinkcolor_h']    = $oct_data['text_head_tooltiplinkcolor_h'];
+	        $data['oct_luxury_head_bgsrchcat']              = $oct_data['head_bgsrchcat'];
+	        $data['oct_luxury_head_bgsrchcattext']          = $oct_data['head_bgsrchcattext'];
+	        $data['oct_luxury_head_srch']                   = $oct_data['head_srch'];
+	        $data['oct_luxury_head_srchcolors']               = $oct_data['head_srchcolors'];
+	        $data['oct_luxury_head_bgcart']                 = $oct_data['head_bgcart'];
+	        $data['oct_luxury_head_bgcart2']                = $oct_data['head_bgcart2'];
+	        $data['oct_luxury_head_textcart2']              = $oct_data['head_textcart2'];
+	        $data['oct_luxury_head_menu_text']              = $oct_data['head_menu_text'];
+	        $data['oct_luxury_head_bgmenu']                 = $oct_data['head_bgmenu'];
+	        $data['oct_luxury_head_maincolormenu']          = $oct_data['head_maincolormenu'];
+	        $data['oct_luxury_head_maincolormenu_h']        = $oct_data['head_maincolormenu_h'];
+	        $data['oct_luxury_head_bgchildmenu']            = $oct_data['head_bgchildmenu'];
+	        $data['oct_luxury_head_parentcolor']            = $oct_data['head_parentcolor'];
+	        $data['oct_luxury_head_parentcolor_hover']        = $oct_data['head_parentcolor_hover'];
+	        $data['oct_luxury_head_childcolor']               = $oct_data['head_childcolor'];
+			$data['oct_luxury_head_childcolor_hover']         = $oct_data['head_childcolor_hover'];
+
+	        // Подвал сайта - настройки цветов
+	        $data['oct_luxury_foot_1stlinebg']                = $oct_data['foot_1stlinebg'];
+	        $data['oct_luxury_foot_linelogo']                 = $oct_data['foot_linelogo'];
+	        $data['oct_luxury_foot_titlecolor']                 = $oct_data['foot_titlecolor'];
+	        $data['oct_luxury_foot_linkcolor']                = $oct_data['foot_linkcolor'];
+	        $data['oct_luxury_foot_linelinks']                = $oct_data['foot_linelinks'];
+	        $data['oct_luxury_foot_garantedcolors']           = $oct_data['foot_garantedcolors'];
+	        $data['oct_luxury_foot_garantedtext']             = $oct_data['foot_garantedtext'];
+	        $data['oct_luxury_foot_2ndlinebg']              = $oct_data['foot_2ndlinebg'];
+	        $data['oct_luxury_foot_iconscolor']               = $oct_data['foot_iconscolor'];
+	        $data['oct_luxury_foot_2ndlinetcolor']            = $oct_data['foot_2ndlinetcolor'];
+	        $data['oct_luxury_foot_2linelink']                = $oct_data['foot_2linelink'];
+	        $data['oct_luxury_foot_3dlinebg']                 = $oct_data['foot_3dlinebg'];
+	        $data['oct_luxury_foot_icocolor']                 = $oct_data['foot_icocolor'];
+	
+	        // Категории - настройки
+	        $data['oct_luxury_cat_sorttype']                = $oct_data['cat_sorttype'];
+	        $data['oct_luxury_cat_sortcolor']                 = $oct_data['cat_sortcolor'];
+	        $data['oct_luxury_cat_hovercolor']              = $oct_data['cat_hovercolor'];
+	        $data['oct_luxury_cat_discountbg']              = $oct_data['cat_discountbg'];
+	        $data['oct_luxury_cat_discountcolor']             = $oct_data['cat_discountcolor'];
+	        $data['oct_luxury_cat_boxtext']                   = $oct_data['cat_boxtext'];
+	        $data['oct_luxury_cat_boxbg']                   = $oct_data['cat_boxbg'];
+	        $data['oct_luxury_cat_moduleborder']            = $oct_data['cat_moduleborder'];
+	        $data['oct_luxury_cat_modulebg']                = $oct_data['cat_modulebg'];
+	        $data['oct_luxury_cat_itembg']                  = $oct_data['cat_itembg'];
+	        $data['oct_luxury_cat_plusminus']                 = $oct_data['cat_plusminus'];
+	        $data['oct_luxury_cat_checkbox']                = $oct_data['cat_checkbox'];
+	        $data['oct_luxury_cat_checkboxactive']          = $oct_data['cat_checkboxactive'];
+	        $data['oct_luxury_cat_1levelbg']                = $oct_data['cat_1levelbg'];
+	        $data['oct_luxury_cat_1levelcolor']               = $oct_data['cat_1levelcolor'];
+	        $data['oct_luxury_cat_2levelbg']                = $oct_data['cat_2levelbg'];
+	        $data['oct_luxury_cat_2levelcolor']               = $oct_data['cat_2levelcolor'];
+	        $data['oct_luxury_cat_3levelbg']                = $oct_data['cat_3levelbg'];
+	        $data['oct_luxury_cat_3levelcolor']               = $oct_data['cat_3levelcolor'];
+	        $data['oct_luxury_cat_3levelbgactive']            = $oct_data['cat_3levelbgactive'];
+	        $data['oct_luxury_cat_3leveltextactive']          = $oct_data['cat_3leveltextactive'];
+
+	        // Карточка товаров - настройки цветов
+	        $data['oct_luxury_pr_garantedcolor']              = $oct_data['pr_garantedcolor'];
+	        $data['oct_luxury_pr_garantedicon']               = $oct_data['pr_garantedicon'];
+	        $data['oct_luxury_pr_photoborder']              = $oct_data['pr_photoborder'];
+	        $data['oct_luxury_pr_photoborderhover']           = $oct_data['pr_photoborderhover'];
+	        $data['oct_luxury_pr_bgright']                  = $oct_data['pr_bgright'];
+	        $data['oct_luxury_pr_activetabtext']              = $oct_data['pr_activetabtext'];
+	        $data['oct_luxury_pr_activetabbg']              = $oct_data['pr_activetabbg'];
+	        $data['oct_luxury_pr_activetabbgcont']            = $oct_data['pr_activetabbgcont'];
+	        $data['oct_luxury_pr_activetabbgtext']            = $oct_data['pr_activetabbgtext'];
+	        $data['oct_luxury_pr_tabtext']                  = $oct_data['pr_tabtext'];
+	        $data['oct_luxury_pr_manufact_and_code']        = $oct_data['pr_manufact_and_code'];
+	        $data['oct_luxury_pr_foundcheaper']               = $oct_data['pr_foundcheaper'];
+	        $data['oct_luxury_pr_buyoneclick']              = $oct_data['pr_buyoneclick'];
+	        $data['oct_luxury_pr_pricecolor']                 = $oct_data['pr_pricecolor'];
+	        $data['oct_luxury_pr_oldpricecolor']              = $oct_data['pr_oldpricecolor'];
+	
+	         // Мобильная версия - настройки
+	        $data['oct_luxury_mob_mainlinebg']              = $oct_data['mob_mainlinebg'];
+	        $data['oct_luxury_mob_cartbg']                  = $oct_data['mob_cartbg'];
+	        $data['oct_luxury_mob_carttexticocolor']          = $oct_data['mob_carttexticocolor'];
+	        $data['oct_luxury_mob_menubg']                = $oct_data['mob_menubg'];
+	        $data['oct_luxury_mob_menucolor']               = $oct_data['mob_menucolor'];
+	        $data['oct_luxury_mob_sbbg']                  = $oct_data['mob_sbbg'];
+	        $data['oct_luxury_mob_sbh3']                  = $oct_data['mob_sbh3'];
+	        $data['oct_luxury_mob_sblinkcolor']               = $oct_data['mob_sblinkcolor'];
+	        $data['oct_luxury_mob_sbbuttoncolor']             = $oct_data['mob_sbbuttoncolor'];
+	        $data['oct_luxury_mob_sbbuttonicon']            = $oct_data['mob_sbbuttonicon'];
+	        $data['oct_luxury_mob_sbbuttoncoloropened']     = $oct_data['mob_sbbuttoncoloropened'];
+	        $data['oct_luxury_mob_sbbuttoniconopened']      = $oct_data['mob_sbbuttoniconopened'];
+	
+	        // Контактная информация
+	        $data['oct_luxury_cont_phones'] = array_values(array_filter(explode(PHP_EOL, $oct_data['cont_phones'])));
+	        $data['oct_luxury_cont_contactmap'] = $oct_data['cont_contactmap'];
+
+	        if(isset($oct_data['cont_clock'])) {
+				$oct_luxury_cont_clock = $oct_data['cont_clock'];
+				if(empty($oct_luxury_cont_clock[$this->session->data['language']])) {
+					$data['oct_luxury_cont_clock'] = false;
+				} else if (isset($oct_luxury_cont_clock[$this->session->data['language']])) {
+					$data['oct_luxury_cont_clock'] = array_values(array_filter(explode(PHP_EOL, $oct_luxury_cont_clock[$this->session->data['language']])));
+				}
+		    } else {
+				$data['oct_luxury_cont_clock'] = false;
+		    }
+	
+		    if(isset($oct_data['cont_adress'])) {
+		    $oct_luxury_cont_adress = $oct_data['cont_adress'];
+		        if(empty($oct_luxury_cont_adress[$this->session->data['language']])) {
+		        	$data['oct_luxury_cont_adress'] = false;
+				} else if (isset($oct_luxury_cont_adress[$this->session->data['language']])) {
+		        	$data['oct_luxury_cont_adress'] = html_entity_decode($oct_luxury_cont_adress[$this->session->data['language']], ENT_QUOTES, 'UTF-8');
+				}
+		    } else {
+				$data['cont_adress'] = false;
+		    }
+	
+			// Вывод ссылок на статьи
+			$data['header_informations'] = array();
+			
+			if(isset($oct_data['header_information_links']) && $this->config->get('config_maintenance') != 1) {
+				foreach ($this->model_catalog_information->getOCTInformations($oct_data['header_information_links']) as $result) {
+					$data['header_informations'][] = array(
+						'information_id'  => $result['information_id'],
+						'title'       => $result['title'],
+						'href'  => $this->url->link('information/information', 'information_id=' . $result['information_id'])
+					);
+		        }
+			}
+	
+			// Свой CSS и Javascript код
+			$data['oct_luxury_customcss'] = html_entity_decode($oct_data['customcss'], ENT_QUOTES, 'UTF-8');
+		    $data['oct_luxury_customjavascrip'] = $oct_data['customjavascrip'];
+		    $data['oct_luxury_stick'] = $oct_data['stick'];
+			]]></add>
+        </operation>
+		<operation>
+			<search><![CDATA[$data['text_checkout'] = $this->language->get('text_checkout');]]></search>
+			<add position="after"><![CDATA[
+			$data['text_page'] = $this->language->get('text_page');
+			]]></add>
+    	</operation>
+		<operation>
+			<search><![CDATA[$data['title'] = $this->document->getTitle();]]></search>
+			<add position="before"><![CDATA[
+			$this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/javascript/jquery/owl-carousel/owl.carousel.min.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/javascript/octemplates/common.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/theme/oct_luxury/js/main.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/theme/oct_luxury/js/input-mask.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/javascript/bootstrap/js/bootstrap.min.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/theme/oct_luxury/js/barrating.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js', 'header', 'octemplates');
+			$this->document->addScript('catalog/view/javascript/octemplates/tippy/tippy.min.js', 'header', 'octemplates');
+			]]></add>
+    	</operation>
+		<operation>
+			<search><![CDATA[$data['scripts'] = $this->document->getScripts();]]></search>
+			<add position="replace"><![CDATA[
+			$data['scripts'] = array();
+			$data['scriptes'] = array();
+			
+			$folder = $_SERVER['DOCUMENT_ROOT'].str_replace('index.php','',$_SERVER['SCRIPT_NAME']);
+			
+			foreach ($this->document->getScripts('header', 'octemplates') as $script) {
+				$del_version = explode("?", $script);
+
+				if (file_exists($folder.$del_version[0])) {
+					$data['scripts'][$script] = ltrim($del_version[0], "/");
+				} else {
+					$data['scriptes'][$script] = $script;
+				}
+			}
+			
+			$data['styles'] = array();
+			$data['styless'] = array();
+			
+			foreach ($this->document->getStyles() as $style) {
+				$del_version = explode("?", $style['href']);
+				
+				if (file_exists($folder.$del_version[0])) {
+					$data['styles'][$style['href']] = array(
+						'href'  => ltrim($del_version[0], "/"),
+						'rel'   => $style['rel'],
+						'media' => $style['media']
+					);
+				} else {
+					$data['styless'][$style['href']] = array(
+						'href'  => $style['href'],
+						'rel'   => $style['rel'],
+						'media' => $style['media']
+					);
+				}
+			}
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['styles'] = $this->document->getStyles();]]></search>
+			<add position="replace"><![CDATA[
+			]]></add>
+    	</operation>
+    </file>
+    <file path="system/library/document.php">
+	    <operation>
+			<search><![CDATA[public function addScript($href, $postion = 'header') {]]></search>
+			<add position="replace"><![CDATA[
+			public function addScript($href, $postion = 'header', $temp = '') {
+			]]></add>
+    	</operation>
+    	<operation>
+			<search><![CDATA[$this->scripts[$postion][$href] = $href;]]></search>
+			<add position="replace"><![CDATA[
+			if (!empty($temp)) {
+				$this->scripts[$temp][$postion][$href] = $href;
+			} else {
+				$this->scripts[$postion][$href] = $href;
+			}
+			]]></add>
+    	</operation>
+    	<operation>
+			<search><![CDATA[public function getScripts($postion = 'header') {]]></search>
+			<add position="replace"><![CDATA[
+			public function getScripts($postion = 'header', $temp = '') {
+				if (isset($this->scripts[$temp][$postion])) {
+					if (!empty($temp)) {
+						if (isset($this->scripts[$postion]) && !empty($this->scripts[$postion])) {
+							return array_merge($this->scripts[$temp][$postion],$this->scripts[$postion]);
+						} else {
+							return $this->scripts[$temp][$postion];
+						}
+					} else {
+						return $this->scripts[$postion];
+					}
+				} else {
+					if (isset($this->scripts[$postion])) {
+						return $this->scripts[$postion];
+					} else {
+						return array();
+					}
+				}
+			}
+			
+			public function getOldScripts($postion = 'header') {
+			]]></add>
+    	</operation>
+    </file>
+    <file path="catalog/model/catalog/information.php" error="skip">
+	    <operation>
+	      <search><![CDATA[public function getInformations() {]]></search>
+	      <add position="before"><![CDATA[
+			public function getOCTInformations($informations_id) {
+			if(!empty($informations_id)){
+				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "information i LEFT JOIN " . DB_PREFIX . "information_description id ON (i.information_id = id.information_id) LEFT JOIN " . DB_PREFIX . "information_to_store i2s ON (i.information_id = i2s.information_id) WHERE (i.information_id IN (" . implode(",", $informations_id) . ")) AND id.language_id = '" . (int)$this->config->get('config_language_id') . "' AND i2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND i.status = '1' AND i.bottom = '1' AND i.sort_order >= 0 ORDER BY i.sort_order, LCASE(id.title) ASC");
+		
+				return $query->rows;
+			} else {
+				return array();
+			}
+			}
+	      ]]></add>
+	    </operation>		  
+    </file>
+	<file path="catalog/language/ru-ru/common/header.php" error="skip">
+    	<operation>
+			<search><![CDATA[$_['text_search']        = 'Поиск';]]></search>
+			<add position="after"><![CDATA[
+				$_['text_page']          = 'страница';
+			]]></add>
+    	</operation>
+  	</file>
+  	<file path="catalog/language/en-gb/common/header.php" error="skip">
+    	<operation>
+			<search><![CDATA[$_['text_all']           = 'Show All';]]></search>
+			<add position="after"><![CDATA[
+				$_['text_page']          = 'page';
+			]]></add>
+    	</operation>
+  	</file>
+    <file path="catalog/controller/common/footer.php">
+        <operation error="skip">
+            <search><![CDATA[$data['contact'] = $this->url->link('information/contact');]]></search>
+            <add position="before"><![CDATA[
+			$oct_data = $this->config->get('oct_luxury_data');
+
+			// Настройки параметров отображения элементов в подвале сайта
+	        $data['oct_luxury_status'] = $this->config->get('oct_luxury_status');
+	        $data['oct_luxury_foot_logo'] = $oct_data['foot_logo'];
+		    $data['oct_luxury_foot_1stline'] = $oct_data['foot_1stline'];
+		    $data['oct_luxury_foot_2ndline'] = $oct_data['foot_2ndline'];
+		    $data['oct_luxury_foot_3dline'] = $oct_data['foot_3dline'];
+		    $data['oct_luxury_foot_infolinks'] = $oct_data['foot_infolinks'];
+		    $data['oct_luxury_foot_garanted'] = $oct_data['foot_garanted'];
+
+			// Контактная информация
+			$data['oct_luxury_cont_phones'] = array_values(array_filter(explode(PHP_EOL, $oct_data['cont_phones'])));
+		    $data['oct_luxury_cont_skype'] = $oct_data['cont_skype'];
+		    $data['oct_luxury_cont_email'] = $oct_data['cont_email'];
+
+			// Вывод ссылок на статьи
+			$data['footer_informations'] = array();
+			
+			if(isset($oct_data['footer_information_links'])) {
+				foreach ($this->model_catalog_information->getOCTInformations($oct_data['footer_information_links']) as $result) {
+					$data['footer_informations'][] = array(
+						'information_id'  => $result['information_id'],
+						'title'       => $result['title'],
+						'href'  => $this->url->link('information/information', 'information_id=' . $result['information_id'])
+					);
+				}
+			}
+
+			$data['name'] = $this->config->get('config_name');
+
+			if ($this->request->server['HTTPS']) {
+				$server = $this->config->get('config_ssl');
+			} else {
+				$server = $this->config->get('config_url');
+			}
+
+			if (is_file(DIR_IMAGE . $this->config->get('config_logo'))) {
+				$data['logo'] = $server . 'image/' . $this->config->get('config_logo');
+			} else {
+				$data['logo'] = '';
+			}
+
+		    $oct_luxury_foot_garanted = $oct_data['foot_garanted'];
+		    if(empty($oct_luxury_foot_garanted[$this->session->data['language']])) {
+				$data['oct_luxury_garanted'] = false;
+		    } else if (isset($oct_luxury_foot_garanted[$this->session->data['language']])) {
+				$data['oct_luxury_garanted'] = html_entity_decode($oct_luxury_foot_garanted[$this->session->data['language']], ENT_QUOTES, 'UTF-8');
+		    }
+		
+		    $oct_luxury_cont_adress = $oct_data['cont_adress'];
+		    
+		    if(empty($oct_luxury_cont_adress[$this->session->data['language']])) {
+				$data['oct_luxury_cont_adress'] = false;
+		    } else if (isset($oct_luxury_cont_adress[$this->session->data['language']])) {
+				$data['oct_luxury_cont_adress'] = html_entity_decode($oct_luxury_cont_adress[$this->session->data['language']], ENT_QUOTES, 'UTF-8');
+		    }
+		
+		    $oct_luxury_cont_clock = $oct_data['cont_clock'];
+	        
+	        if(empty($oct_luxury_cont_clock[$this->session->data['language']])) {
+				$data['oct_luxury_cont_clock'] = false;
+		    } else if (isset($oct_luxury_cont_clock[$this->session->data['language']])) {
+		        $data['oct_luxury_cont_clock'] = array_values(array_filter(explode(PHP_EOL, $oct_luxury_cont_clock[$this->session->data['language']])));
+		    }
+
+			// Социальные сети
+	        $data['oct_luxury_ps_facebook_id']      = $oct_data['ps_facebook_id'];
+	        $data['oct_luxury_ps_vk_id']            = $oct_data['ps_vk_id'];
+	        $data['oct_luxury_ps_gplus_id']           = $oct_data['ps_gplus_id'];
+	        $data['oct_luxury_ps_odnoklass_id']       = $oct_data['ps_odnoklass_id'];
+	        $data['oct_luxury_ps_twitter_username']   = $oct_data['ps_twitter_username'];
+	        $data['oct_luxury_ps_vimeo_id']         = $oct_data['ps_vimeo_id'];
+	        $data['oct_luxury_ps_pinterest_id']       = $oct_data['ps_pinterest_id'];
+	        $data['oct_luxury_ps_flick_id']         = $oct_data['ps_flick_id'];
+	        $data['oct_luxury_ps_instagram']        = $oct_data['ps_instagram'];
+	        $data['oct_luxury_ps_youtube_id']         = $oct_data['ps_youtube_id'];
+	        $data['oct_luxury_ps_whatsapp_id']         = (isset($oct_data['ps_whatsapp_id'])) ? $oct_data['ps_whatsapp_id'] : '';
+	        $data['oct_luxury_ps_telegram_id']         = (isset($oct_data['ps_telegram_id'])) ? $oct_data['ps_telegram_id'] : '';
+	        $data['oct_luxury_ps_viber_id']         = (isset($oct_data['ps_viber_id'])) ? $oct_data['ps_viber_id'] : '';
+	
+	        // Платежные системы
+	        $data['oct_luxury_ps_sberbank']         = $oct_data['ps_sberbank'];
+	        $data['oct_luxury_ps_privat']             = $oct_data['ps_privat'];
+	        $data['oct_luxury_ps_yamoney']        = $oct_data['ps_yamoney'];
+	        $data['oct_luxury_ps_webmoney']         = $oct_data['ps_webmoney'];
+	        $data['oct_luxury_ps_visa']             = $oct_data['ps_visa'];
+	        $data['oct_luxury_ps_qiwi']             = $oct_data['ps_qiwi'];
+	        $data['oct_luxury_ps_skrill']             = $oct_data['ps_skrill'];
+	        $data['oct_luxury_ps_interkassa']         = $oct_data['ps_interkassa'];
+	        $data['oct_luxury_ps_liqpay']             = $oct_data['ps_liqpay'];
+	        $data['oct_luxury_ps_paypal']           = $oct_data['ps_paypal'];
+	        $data['oct_luxury_ps_robokassa']        = $oct_data['ps_robokassa'];
+	
+	        $data['ps_additional_icons'] = array();
+	
+	        $this->load->model('tool/image');
+	
+	        if (isset($oct_data['ps_additional_icons']) && $oct_data['ps_additional_icons']) {
+				foreach ($oct_data['ps_additional_icons'] as $ps_additional_icon) {
+	            	$data['ps_additional_icons'][] = array(
+						'image'      => $this->model_tool_image->resize($ps_additional_icon['image'], 53, 33),
+						'sort_order' => ($ps_additional_icon['sort_order']) ? $ps_additional_icon['sort_order'] : 0
+					);
+				}
+	
+				foreach ($data['ps_additional_icons'] as $key => $value) {
+	            	$sort_order[$key] = $value['sort_order'];
+				}
+	
+				array_multisort($sort_order, SORT_ASC, $data['ps_additional_icons']);
+	        }
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/compare.php">
+        <operation error="skip">
+            <search><![CDATA[$data['attribute_groups'] = array();]]></search>
+            <add position="before"><![CDATA[
+			$this->load->language('octemplates/oct_luxury');
+			$data['oct_home_text'] = $this->language->get('oct_home_text');
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/search.php">
+        <operation error="skip">
+            <search><![CDATA[$this->load->model('catalog/category');]]></search>
+            <add position="before"><![CDATA[
+			$this->load->language('octemplates/oct_luxury');
+			$data['oct_home_text'] = $this->language->get('oct_home_text');
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/category.php">
+        <operation error="skip">
+            <search><![CDATA[$category_info = $this->model_catalog_category->getCategory($category_id);]]></search>
+            <add position="before"><![CDATA[
+		    $this->load->language('octemplates/oct_luxury');
+		    $data['oct_home_text'] = $this->language->get('oct_home_text');
+		    $data['oct_choose_subcategory'] = $this->language->get('oct_choose_subcategory');
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if ((float)$result['special']) {]]></search>
+            <add position="before"><![CDATA[
+			if ((float)$result['special']) {
+				$economy = round((($result['price'] - $result['special'])/($result['price'] + 0.01))*100, 0);
+			} else {
+				$economy = false;
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['price'       => $price,]]></search>
+            <add position="before"><![CDATA['economy'       => $economy,]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/special.php">
+        <operation error="skip">
+            <search><![CDATA[if ((float)$result['special']) {]]></search>
+            <add position="before"><![CDATA[
+			$this->load->language('octemplates/oct_luxury');
+			$data['oct_home_text'] = $this->language->get('oct_home_text');
+			if ((float)$result['special']) {
+				$economy = round((($result['price'] - $result['special'])/($result['price'] + 0.01))*100, 0);
+			} else {
+				$economy = false;
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['price'       => $price,]]></search>
+            <add position="before"><![CDATA['economy'       => $economy,]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/manufacturer.php">
+        <operation error="skip">
+            <search><![CDATA[if ((float)$result['special']) {]]></search>
+            <add position="before"><![CDATA[
+			if ((float)$result['special']) {
+				$economy = round((($result['price'] - $result['special'])/($result['price'] + 0.01))*100, 0);
+			} else {
+				$economy = false;
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['price'       => $price,]]></search>
+            <add position="before"><![CDATA['economy'       => $economy,]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/search.php">
+        <operation error="skip">
+            <search><![CDATA[if ((float)$result['special']) {]]></search>
+            <add position="before"><![CDATA[
+			if ((float)$result['special']) {
+				$economy = round((($result['price'] - $result['special'])/($result['price'] + 0.01))*100, 0);
+			} else {
+				$economy = false;
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['price'       => $price,]]></search>
+            <add position="before"><![CDATA['economy'       => $economy,]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/product.php">
+	    <operation>
+		    <search><![CDATA[$this->document->addScript('catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js');]]></search>
+            <add position="replace"><![CDATA[
+			//$this->document->addScript('catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js');
+	        ]]></add>
+	    </operation>
+	    <operation>
+		    <search><![CDATA[$this->document->addStyle('catalog/view/javascript/jquery/magnific/magnific-popup.css');]]></search>
+            <add position="replace"><![CDATA[
+	        //$this->document->addStyle('catalog/view/javascript/jquery/magnific/magnific-popup.css');
+	        ]]></add>
+	    </operation>
+	    <operation error="skip">
+            <search><![CDATA[if ((float)$result['special']) {]]></search>
+            <add position="before"><![CDATA[
+			if ((float)$result['special']) {
+				$economy = round((($result['price'] - $result['special'])/($result['price'] + 0.01))*100, 0);
+			} else {
+				$economy = false;
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['price'       => $price,]]></search>
+            <add position="before"><![CDATA['economy'       => $economy,]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_product->updateViewed($this->request->get['product_id']);]]></search>
+            <add position="after"><![CDATA[
+			$oct_data = $this->config->get('oct_luxury_data');
+			$this->load->language('octemplates/oct_luxury');
+			$data['you_save_text'] = $this->language->get('you_save');
+			$data['text_gallery'] = $this->language->get('text_gallery');
+			$data['oct_luxury_pr_micro'] = $oct_data['pr_micro'];
+			$data['oct_luxury_currency_code_data'] = $this->session->data['currency'];
+			$data['oct_luxury_pr_shortdesc'] = $oct_data['pr_shortdesc'];
+			$data['oct_luxury_pr_logoman'] = $oct_data['pr_logoman'];
+			$data['oct_home_text'] = $this->language->get('oct_home_text');
+			$data['text_oct_option_disable'] = $this->language->get('oct_option_disable');
+
+			$oct_luxury_pr_garantedtext = $oct_data['pr_garantedtext'];
+
+			if(empty($oct_luxury_pr_garantedtext[$this->session->data['language']])) {
+				$data['oct_luxury_pr_garantedtext'] = false;
+			} else if (isset($oct_luxury_pr_garantedtext[$this->session->data['language']])) {
+				$data['oct_luxury_pr_garantedtext'] = html_entity_decode($oct_luxury_pr_garantedtext[$this->session->data['language']], ENT_QUOTES, 'UTF-8');
+			}
+
+			if ((float)$product_info['special']) {
+		        $data['economy'] = round((($product_info['price'] - $product_info['special'])/($product_info['price'] + 0.01))*100, 0);
+		        $data['saver'] = round($product_info['price'] - $product_info['special']);
+		        $data['you_save'] = $this->currency->format($this->tax->calculate($data['saver'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+			} else {
+		        $data['economy'] = false;
+		        $data['you_save'] = false;
+			}
+
+			$oct_luxury_data = $this->config->get('oct_luxury_data');
+
+			if (isset($oct_luxury_data['terms']) && $oct_luxury_data['terms']) {
+				$this->load->model('catalog/information');
+
+				$information_info = $this->model_catalog_information->getInformation($oct_luxury_data['terms']);
+
+				if ($information_info) {
+					$data['text_terms'] = sprintf($this->language->get('text_oct_terms'), $this->url->link('information/information', 'information_id=' . $oct_luxury_data['terms'], 'SSL'), $information_info['title'], $information_info['title']);
+				} else {
+					$data['text_terms'] = '';
+				}
+			} else {
+				$data['text_terms'] = '';
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['options'] = array();]]></search>
+            <add position="before"><![CDATA[
+			$data['quantity'] = $product_info['quantity'];
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (empty($this->request->post['rating']) || $this->request->post['rating'] < 0 || $this->request->post['rating'] > 5) {]]></search>
+            <add position="before"><![CDATA[
+			$oct_luxury_data = $this->config->get('oct_luxury_data');
+
+			if (isset($oct_luxury_data['terms']) && $oct_luxury_data['terms']) {
+				if (!isset($this->request->post['terms'])) {
+					$this->load->model('catalog/information');
+
+					$information_info = $this->model_catalog_information->getInformation($oct_luxury_data['terms']);
+
+					$json['error'] = sprintf($this->language->get('error_oct_terms'), $information_info['title']);
+				}
+			}
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/ru-ru/product/product.php">
+        <operation error="skip">
+            <search><![CDATA[<?php]]></search>
+            <add position="after"><![CDATA[
+			$_['oct_option_disable'] = 'Закончился';
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/en-gb/product/product.php">
+        <operation error="skip">
+            <search><![CDATA[<?php]]></search>
+            <add position="after"><![CDATA[
+			$_['oct_option_disable'] = 'Ended';
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/uk-ua/product/product.php">
+        <operation error="skip">
+            <search><![CDATA[<?php]]></search>
+            <add position="after"><![CDATA[
+			$_['oct_option_disable'] = 'Закінчився';
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/checkout/cart.php">
+        <operation error="skip">
+            <search><![CDATA[$json['total'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total, $this->session->data['currency']));]]></search>
+            <add position="replace"><![CDATA[
+			$json['total'] = $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0);
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/category.php">
+        <operation error="skip">
+            <search><![CDATA[$data['categories'][] = array(]]></search>
+            <add position="before"><![CDATA[
+			if(isset($result['image']) && $result['image'] !="") {
+				$cat_image = $this->model_tool_image->resize($result['image'], 100, 100);
+			} else {
+				$cat_image = $this->model_tool_image->resize("no-image.png", 100, 100);
+			}
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['categories'][] = array(]]></search>
+            <add position="after"><![CDATA['thumb' => $cat_image,]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/{special,search,manufacturer}.php">
+        <operation error="skip">
+            <search><![CDATA[$this->load->model('catalog/product');]]></search>
+            <add position="after"><![CDATA[$data['oct_popup_view_data'] = $this->config->get('oct_popup_view_data');]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/{category,manufacturer}.php">
+        <operation>
+            <search><![CDATA[$this->load->model('tool/image');]]></search>
+            <add position="after"><![CDATA[
+            $this->load->language('octemplates/oct_luxury');
+            $data['oct_show_more'] = $this->language->get('oct_show_more');
+            $data['oct_home_text'] = $this->language->get('oct_home_text');
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/en-gb/en-gb.php">
+        <operation error="skip">
+            <search><![CDATA[<?php]]></search>
+            <add position="after"><![CDATA[
+			$_['text_oct_terms']  = 'I have read <a href="%s" target="_blank"><b>%s</b></a> and agree with conditions';
+			$_['error_oct_terms'] = 'You have to read and will agree with %s!';
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/ru-ru/ru-ru.php">
+        <operation error="skip">
+            <search><![CDATA[<?php]]></search>
+            <add position="after"><![CDATA[
+			$_['text_oct_terms']  = 'Я прочитал <a href="%s" target="_blank"><b>%s</b></a> и согласен с условиями';
+			$_['error_oct_terms'] = 'Вы должны прочитать и согласится с %s!';
+      ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/uk-ua/uk-ua.php">
+        <operation error="skip">
+            <search><![CDATA[<?php]]></search>
+            <add position="after"><![CDATA[
+			$_['text_oct_terms']  = 'Я прочитав <a href="%s" target="_blank"><b>%s</b></a> і згоден з вимогами';
+			$_['error_oct_terms'] = 'Ви повинні прочитати і погодитися з %s!';
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/information/information.php">
+        <operation error="skip">
+            <search><![CDATA[$data['description'] = html_entity_decode($information_info['description'], ENT_QUOTES, 'UTF-8');]]></search>
+            <add position="replace"><![CDATA[
+			$data['description'] = str_replace("<img", "<img class=\"img-responsive\"",  html_entity_decode($information_info['description'], ENT_QUOTES, 'UTF-8'));
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/category.php">
+        <operation error="skip">
+            <search><![CDATA[$data['description'] = html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8');]]></search>
+            <add position="replace"><![CDATA[
+			$data['description'] = str_replace("<img", "<img class=\"img-responsive\"",  html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8'));
+			]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/product.php">
+        <operation error="skip">
+            <search><![CDATA[$data['description'] = html_entity_decode($product_info['description'], ENT_QUOTES, 'UTF-8');]]></search>
+            <add position="replace"><![CDATA[
+			$data['description'] = str_replace("<img", "<img class=\"img-responsive\"",  html_entity_decode($product_info['description'], ENT_QUOTES, 'UTF-8'));
+			]]></add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>oct_megamenu_100</code>
+	<name>Octemplates - Megamenu</name>
+	<version>1.0.0</version>
+	<author>Octemplates</author>
+	<link>http://octemplates.net/</link>
+	<file path="catalog/controller/common/header.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['language'] = $this->load->controller('common/language');]]></search>
+			<add position="before"><![CDATA[
+			*/
+			
+			// start: oct_megamenu
+			$data['oct_megamenu_data'] = $this->config->get('oct_megamenu_data');
+			$oct_megamenu_data = $this->config->get('oct_megamenu_data');
+			if (isset($oct_megamenu_data['status']) && $oct_megamenu_data['status']) {
+				$data['oct_megamenu'] = $this->load->controller('extension/module/oct_megamenu');
+			}
+			// end: oct_megamenu
+			]]></add>
+    	</operation>
+    	<operation>
+	    	<search><![CDATA[$this->load->model('catalog/category');]]></search>
+	    	<add position="before"><![CDATA[
+		    /*
+	    	]]></add>
+    	</operation>
+  	</file>
+</modification>

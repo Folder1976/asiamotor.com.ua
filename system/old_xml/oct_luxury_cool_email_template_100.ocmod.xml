@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<modification>
+	<name>Octemplates - Cool Email Template</name>
+	<code>oct_luxury_cool_email_template_100</code>
+	<version>1.0.0</version>
+	<author>Octemplates</author>
+	<link>http://octemplates.net</link>
+	<file path="catalog/model/checkout/order.php">
+		<operation error="skip">
+			<search><![CDATA[$data['products'] = array();]]></search>
+			<add position="after"><![CDATA[
+				$this->load->model('tool/image');
+				$this->load->model('catalog/product');	
+			]]></add>
+		</operation>
+ 		<operation error="skip">
+			<search><![CDATA[$data['products'][] = array(]]></search>
+			<add position="before"><![CDATA[
+				$product_info = $this->model_catalog_product->getProduct($product['product_id']);
+				$oct_data = $this->config->get('oct_luxury_data');  
+			]]></add>
+		</operation>   
+ 		<operation error="skip">
+			<search><![CDATA[$data['products'][] = array(]]></search>
+			<add position="after"><![CDATA[
+				'image'    => ($product_info['image']) ? $this->model_tool_image->resize($product_info['image'], 100, 100) : '',
+				'href'        => $this->url->link('product/product', 'product_id=' . $product['product_id']),
+				'phone' => $oct_data['cont_phones'],
+				'adres' => $oct_data['cont_adress'],
+				'clock' => $oct_data['cont_clock'],
+				'lang'	=> $this->session->data['language'],
+				'storeset_facebook_id' => $oct_data['ps_facebook_id'],
+				'storeset_vk_id' => $oct_data['ps_vk_id'],
+				'storeset_gplus_id' => $oct_data['ps_gplus_id'],	
+				'storeset_odnoklass_id' => $oct_data['ps_odnoklass_id'],	
+				'oct_luxury_ps_twitter_username' => $oct_data['ps_twitter_username'],
+				'oct_luxury_ps_instagram' => $oct_data['ps_instagram'],	
+				'oct_luxury_ps_youtube_id' => $oct_data['ps_youtube_id'],						
+			]]></add>
+		</operation>  		
+	</file>		
+</modification>

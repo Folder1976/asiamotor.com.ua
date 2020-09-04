@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+  <code>oct_product_manufacturer_logo_100</code>
+  <name>Octemplates - Product Manufacturer Logo</name>
+  <version>1.0.0</version>
+  <author>Octemplates</author>
+  <link>http://octemplates.net/</link>
+  <file path="catalog/controller/product/product.php">
+    <operation error="skip">
+      <search><![CDATA[$data['column_left'] = $this->load->controller('common/column_left');]]></search>
+      <add position="before"><![CDATA[
+        // oct_product_manufacturer_logo start
+        $data['manufacturer_info'] = array();
+
+        if ($product_info['manufacturer_id'] && $oct_data['pr_logoman'] == 'on') {
+          $manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($product_info['manufacturer_id']);
+          if ($manufacturer_info) {
+              if ($manufacturer_info['image']) {
+                $man_img = $this->model_tool_image->resize($manufacturer_info['image'], 150, 70);
+              } else {
+                $man_img = $this->model_tool_image->resize('placeholder.png', 150, 70);
+              }
+
+              $data['manufacturer_info'] = array(
+                'name' => $manufacturer_info['name'],
+                'image'=> $man_img,
+                'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $product_info['manufacturer_id'])
+              );
+          }
+        }
+        // oct_product_manufacturer_logo end
+      ]]></add>
+    </operation>
+  </file>
+</modification>
